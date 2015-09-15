@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 Radoslav Husár
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.jboss.test.clusterbench.common.debug;
 
 import java.io.IOException;
@@ -12,7 +28,7 @@ import org.jboss.test.clusterbench.common.ClusterBenchConstants;
 import org.jboss.test.clusterbench.common.SerialBean;
 
 /**
- * Let this Servlet just output some debug information provided in the overridden method.
+ * Servlet which outputs debug information provided by the {@link #getDebugInfo(HttpServletRequest)} method.
  *
  * @author Radoslav Husar
  * @version April 2012
@@ -27,13 +43,23 @@ public abstract class AbstractCommonDebugServlet extends HttpServlet {
         HttpSession session = req.getSession(true);
 
         if (session.isNew()) {
-            log.log(Level.INFO, "New DEBUG session created: {0}", session.getId());
+            log.log(Level.INFO, "New session created: {0}", session.getId());
+            session.setAttribute(KEY, new SerialBean());
+        } else if (session.getAttribute(KEY) == null) {
+            log.log(Level.INFO, "Session is not new, creating SerialBean: {0}", session.getId());
             session.setAttribute(KEY, new SerialBean());
         }
 
         SerialBean bean = (SerialBean) session.getAttribute(KEY);
 
         resp.setContentType("text/plain");
+
+        // Readonly?
+        if (req.getParameter(ClusterBenchConstants.READONLY) != null) {
+            resp.getWriter().print(bean.getSerial());
+            resp.getWriter().println(this.getDebugInfo(req));
+            return;
+        }
 
         int serial = bean.getSerial();
         bean.setSerial(serial + 1);
@@ -56,5 +82,11 @@ public abstract class AbstractCommonDebugServlet extends HttpServlet {
         return "Debug servlet.";
     }
 
+    /**
+     * Implement this method to print out any debug info.
+     *
+     * @param req HttpServletRequest
+     * @return String debug info
+     */
     abstract public String getDebugInfo(HttpServletRequest req);
 }
