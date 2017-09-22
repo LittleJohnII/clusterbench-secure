@@ -182,6 +182,25 @@
                             </archive>
                         </configuration>
                     </execution>
+                    <!-- Build secured web configuration: all resources are protected and only users in the User or Admin group can access them -->
+                    <execution>
+                        <phase>package</phase>
+                        <id>build-secured-war</id>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>secured</classifier>
+                            <webappDirectory>${project.build.directory}/${project.build.finalName}-secured</webappDirectory>
+                            <warSourceDirectory>${basedir}/src/main/webapp-secured</warSourceDirectory>
+                            <packagingExcludes>%regex[.*granular.*],%regex[.*clusterbench-common.*]</packagingExcludes>
+                            <archive>
+                                <manifestEntries>
+                                    <Dependencies>org.infinispan, org.jgroups</Dependencies>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

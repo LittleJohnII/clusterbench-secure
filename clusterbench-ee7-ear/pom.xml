@@ -77,6 +77,12 @@
                             <classifier>granular</classifier>
                             <contextRoot>/clusterbench-granular</contextRoot>
                         </webModule>
+                        <webModule>
+                            <groupId>org.jboss.test</groupId>
+                            <artifactId>clusterbench-ee7-web</artifactId>
+                            <classifier>secured</classifier>
+                            <contextRoot>/clusterbench-secured</contextRoot>
+                        </webModule>
                     </modules>
                 </configuration>
             </plugin>
@@ -109,6 +115,13 @@
             <artifactId>clusterbench-ee7-web</artifactId>
             <version>${project.version}</version>
             <classifier>granular</classifier>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.test</groupId>
+            <artifactId>clusterbench-ee7-web</artifactId>
+            <version>${project.version}</version>
+            <classifier>secured</classifier>
             <type>war</type>
         </dependency>
     </dependencies>
